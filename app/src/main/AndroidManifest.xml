@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.bakingapp" >
-    <uses-permission android:name="android.permission.INTERNET" />
+    package="com.example.bakingapp">
 
     <application
         android:name=".RecipeApplication"
@@ -10,8 +9,10 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" >
-        <activity android:name=".ui.ActivityMain" >
+        android:theme="@style/AppTheme">
+        <activity android:name=".step.ActivityStep"></activity>
+        <activity android:name=".recipe.ActivityRecipe" />
+        <activity android:name=".ui.ActivityMain">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -19,5 +20,7 @@
             </intent-filter>
         </activity>
     </application>
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>
