@@ -24,7 +24,10 @@ import java.util.List;
 public class FragmentStep extends Fragment {
     private int positionStep;
     private int positionRecipe;
-    private Step step;
+
+
+//    private Step step;
+    private List<Recipe> mRecipes;
     private TextView tvStepDestription;
 
     public FragmentStep() {
@@ -35,12 +38,12 @@ public class FragmentStep extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_step, container, false);
 
-        Intent intent = getActivity().getIntent();
-        positionStep = intent.getIntExtra(ActivityRecipe.EXTRA_INT_STEP, 0);
-        positionRecipe = intent.getIntExtra(ActivityRecipe.EXTRA_INT_RECIPE, 0);
-        observeStep();
-        tvStepDestription = rootView.findViewById(R.id.tv_step_description);
+//        Intent intent = getActivity().getIntent();
+//        positionStep = intent.getIntExtra(ActivityRecipe.EXTRA_INT_STEP, positionStep);
+//            positionRecipe = intent.getIntExtra(ActivityRecipe.EXTRA_INT_RECIPE, 0);
 
+        tvStepDestription = rootView.findViewById(R.id.tv_step_description);
+        observeStep();
         return rootView;
     }
 
@@ -49,8 +52,9 @@ public class FragmentStep extends Fragment {
                 this, new Observer<List<Recipe>>() {
                     @Override
                     public void onChanged(List<Recipe> recipes) {
-                        step = recipes.get(positionRecipe).getSteps().get(positionStep);
-                        tvStepDestription.setText(step.getDescription());
+                        mRecipes = recipes;
+
+                        tvStepDestription.setText(recipes.get(positionRecipe).getSteps().get(positionStep).getDescription());
 
                         Log.d("AAAAA", "data of recipe received. Name is:" + recipes.get(0).getName()
                                 + ". Image is:"
@@ -59,5 +63,12 @@ public class FragmentStep extends Fragment {
                     }
                 }
         );
+    }
+
+    public void setPosition(int step, int recipe){
+        positionStep = step;
+        positionRecipe = recipe;
+
+
     }
 }
