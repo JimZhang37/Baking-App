@@ -9,7 +9,7 @@ import android.os.Bundle;
 import com.example.bakingapp.R;
 import com.example.bakingapp.recipe.ActivityRecipe;
 
-public class ActivityStep extends AppCompatActivity {
+public class ActivityStep extends AppCompatActivity implements FragmentStep.ButtonClickListener {
     private int positionStep;
     private int positionRecipe;
 
@@ -23,9 +23,36 @@ public class ActivityStep extends AppCompatActivity {
 
         FragmentManager manager = getSupportFragmentManager();
         FragmentStep fragmentStep = new FragmentStep();
-        fragmentStep.setPosition(positionStep,positionRecipe);
+        fragmentStep.setPosition(positionStep,positionRecipe, this);
+
+        manager.beginTransaction()
+                .add(R.id.fragment_host, fragmentStep)
+                .commit();
+    }
+
+    @Override
+    public void onPreviousClick(int currentPosition) {
+
+            positionStep = currentPosition-1;
+
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentStep fragmentStep = new FragmentStep();
+        fragmentStep.setPosition(positionStep,positionRecipe, this);
         manager.beginTransaction()
                 .replace(R.id.fragment_host, fragmentStep)
                 .commit();
+    }
+
+    @Override
+    public void onNextClick(int currentPosition) {
+        positionStep = currentPosition + 1;
+
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentStep fragmentStep = new FragmentStep();
+        fragmentStep.setPosition(positionStep,positionRecipe, this);
+        manager.beginTransaction()
+                .replace(R.id.fragment_host, fragmentStep)
+                .commit();
+
     }
 }

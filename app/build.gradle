@@ -17,6 +17,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+//        targetCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility = 1.8
+        sourceCompatibility = 1.8
+    }
 }
 
 dependencies {
@@ -32,4 +37,9 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-moshi:$retrofit2_version"
     // Recycler View
     implementation "androidx.recyclerview:recyclerview:$recyclerview_version"
+
+    implementation "com.google.android.exoplayer:exoplayer:$exoplayer_version"
+
+    implementation "androidx.cardview:cardview:$cardview_version"
+
 }

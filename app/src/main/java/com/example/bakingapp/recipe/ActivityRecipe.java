@@ -11,25 +11,32 @@ import android.util.Log;
 import com.example.bakingapp.R;
 import com.example.bakingapp.step.ActivityStep;
 import com.example.bakingapp.step.FragmentStep;
+import com.example.bakingapp.ui.ActivityMain;
 
-public class ActivityRecipe extends AppCompatActivity implements AdapterStep.ListItemClickeListener {
+public class ActivityRecipe extends AppCompatActivity implements AdapterStep.ListItemClickeListener, FragmentStep.ButtonClickListener {
 
     public static final String EXTRA_INT_STEP = "from_recipe_to_step_step_position";
     public static final String EXTRA_INT_RECIPE = "from_recipe_to_step_recipe_position";
 
+    private int positionRecipe;
+    private int positionStep;
     private boolean mTwoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe);
-
+        Intent intent = getIntent();
+        positionRecipe = intent.getIntExtra(ActivityMain.EXTRA_INT_RECIPE,0);
+        Log.d("Intent recipe", "position is:" + positionRecipe);
         if (findViewById(R.id.fragment_host) != null) {
             mTwoPane = true;
 
             FragmentManager manager = getSupportFragmentManager();
             FragmentStep fragmentStep = new FragmentStep();
-            fragmentStep.setPosition(0,0);
+
+            positionStep = 0;
+            fragmentStep.setPosition(positionStep,positionRecipe,this);
             manager.beginTransaction()
                     .add(R.id.fragment_host, fragmentStep)
                     .commit();
@@ -53,10 +60,39 @@ public class ActivityRecipe extends AppCompatActivity implements AdapterStep.Lis
 
             FragmentManager manager = getSupportFragmentManager();
             FragmentStep fragmentStep = new FragmentStep();
-            fragmentStep.setPosition(position,recipePosition);
+            positionStep = position;
+
+            fragmentStep.setPosition(positionStep,positionRecipe, this);
             manager.beginTransaction()
                     .replace(R.id.fragment_host, fragmentStep)
                     .commit();
         }
+    }
+
+    @Override
+    public void onPreviousClick(int currentPosition) {
+        positionStep = currentPosition -1;
+
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentStep fragmentStep = new FragmentStep();
+
+        fragmentStep.setPosition(positionStep,positionRecipe, this);
+        manager.beginTransaction()
+                .replace(R.id.fragment_host, fragmentStep)
+                .commit();
+
+    }
+
+    @Override
+    public void onNextClick(int currentPosition) {
+        positionStep = currentPosition +1;
+
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentStep fragmentStep = new FragmentStep();
+
+        fragmentStep.setPosition(positionStep,positionRecipe, this);
+        manager.beginTransaction()
+                .replace(R.id.fragment_host, fragmentStep)
+                .commit();
     }
 }

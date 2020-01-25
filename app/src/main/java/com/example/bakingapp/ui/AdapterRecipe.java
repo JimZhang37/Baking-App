@@ -7,6 +7,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bakingapp.R;
@@ -44,7 +45,7 @@ public class AdapterRecipe extends RecyclerView.Adapter<AdapterRecipe.VHRecipe> 
     @NonNull
     @Override
     public VHRecipe onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LinearLayout layout = (LinearLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_recipe, parent, false);
+        CardView layout = (CardView) LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_recipe, parent, false);
 
         return new VHRecipe(layout);
     }

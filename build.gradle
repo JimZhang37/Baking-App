@@ -4,7 +4,10 @@ buildscript {
 
     ext {
         appcompat_version = '1.1.0'
+        cardview_version = '1.0.0'
         constraintlayout_version = '1.1.3'
+        exoplayer_version = '2.11.1'
+
         expresso_version = '3.2.0'
         junit_version = '4.12'
         legacy_support_version = '1.0.0'

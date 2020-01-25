@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bakingapp.R;
@@ -44,7 +45,7 @@ public class AdapterStep extends RecyclerView.Adapter<AdapterStep.VHStep> {
     @NonNull
     @Override
     public VHStep onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        TextView tv = (TextView) LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_step,parent,false);
+        CardView tv = (CardView) LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_step,parent,false);
 
         return new VHStep(tv);
     }
@@ -57,9 +58,9 @@ public class AdapterStep extends RecyclerView.Adapter<AdapterStep.VHStep> {
 
     class VHStep extends RecyclerView.ViewHolder{
         private TextView tv;
-        public VHStep(@NonNull TextView itemView) {
+        public VHStep(@NonNull View itemView) {
             super(itemView);
-            tv = itemView;
+            tv = itemView.findViewById(R.id.tv_step);
         }
 
         public void bind(final int position){
