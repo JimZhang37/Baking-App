@@ -1,18 +1,30 @@
 package com.example.bakingapp.step;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import com.example.bakingapp.R;
 import com.example.bakingapp.recipe.ActivityRecipe;
+import com.example.bakingapp.ui.ActivityMain;
 
 public class ActivityStep extends AppCompatActivity implements FragmentStep.ButtonClickListener {
     private int positionStep;
     private int positionRecipe;
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        Intent intent = new Intent(this, ActivityRecipe.class);
+        intent.putExtra(ActivityMain.EXTRA_INT_RECIPE,positionRecipe);
+        startActivity(intent);
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
