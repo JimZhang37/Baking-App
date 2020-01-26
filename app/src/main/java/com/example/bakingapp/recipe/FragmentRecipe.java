@@ -1,6 +1,7 @@
 package com.example.bakingapp.recipe;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,6 +29,7 @@ public class FragmentRecipe extends Fragment {
     private int position;
     private Recipe recipe;
     private AdapterStep adapter;
+    public static final String FAVOURITE_INGREDIENT = "favourite_ingredient";
 
     public FragmentRecipe() {
     }
@@ -68,6 +70,7 @@ public class FragmentRecipe extends Fragment {
                         recipe = recipes.get(position);
                         getActivity().setTitle(recipe.getName());
                         tvIngredients.setText(recipe.getName());
+                        savePreference(recipe.getName());
                         adapter.updateData(recipes.get(position).getSteps());
 
                         Log.d("AAAAA", "data of recipe received. Name is:" + recipes.get(0).getName()
@@ -77,5 +80,14 @@ public class FragmentRecipe extends Fragment {
                     }
                 }
         );
+    }
+
+    private void savePreference(String ingredients) {
+
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("abc",getActivity().MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(FAVOURITE_INGREDIENT, ingredients);
+
+        editor.commit();
     }
 }

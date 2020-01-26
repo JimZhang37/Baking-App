@@ -23,7 +23,7 @@ public class ActivityRecipe extends AppCompatActivity implements AdapterStep.Lis
     private int positionRecipe;
     private int positionStep;
     private boolean mTwoPane;
-
+    private String favouriteIngredient;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,4 +125,6 @@ public class ActivityRecipe extends AppCompatActivity implements AdapterStep.Lis
         positionStep = sharedPref.getInt(EXTRA_INT_STEP, 0);
         Log.d("sharedPreference", "recipe is: "+ positionRecipe);
     }
+
+
 }
