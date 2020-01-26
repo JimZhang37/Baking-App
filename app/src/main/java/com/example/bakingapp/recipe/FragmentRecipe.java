@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bakingapp.R;
 import com.example.bakingapp.RecipeApplication;
+import com.example.bakingapp.data.Ingredient;
 import com.example.bakingapp.data.Recipe;
 import com.example.bakingapp.ui.ActivityMain;
 
@@ -30,7 +31,7 @@ public class FragmentRecipe extends Fragment {
     private Recipe recipe;
     private AdapterStep adapter;
     public static final String FAVOURITE_INGREDIENT = "favourite_ingredient";
-
+    private String ingredientString;
     public FragmentRecipe() {
     }
 
@@ -69,10 +70,25 @@ public class FragmentRecipe extends Fragment {
                     public void onChanged(List<Recipe> recipes) {
                         recipe = recipes.get(position);
                         getActivity().setTitle(recipe.getName());
-                        tvIngredients.setText(recipe.getName());
-                        savePreference(recipe.getName());
+
+
                         adapter.updateData(recipes.get(position).getSteps());
 
+
+                        List<Ingredient> ingredientList = recipe.getIngredients();
+                        ingredientString = "INGREDIENTS: \n";
+                        ingredientList.forEach(ingredient -> {
+                            String ingredientWithMeasure = ingredient.getQuantity()
+                                    + " "
+                                    + ingredient.getMeasure()
+                                    + " "
+                                    + ingredient.getIngredient()
+                                    + "\n";
+                            ingredientString += ingredientWithMeasure;
+                        });
+
+                        tvIngredients.setText(ingredientString);
+                        savePreference(ingredientString);
                         Log.d("AAAAA", "data of recipe received. Name is:" + recipes.get(0).getName()
                                 +". Image is:"
                                 +recipes.get(0).getImage()

@@ -65,8 +65,8 @@ public class FragmentStep extends Fragment {
         observeStep();
 
         mPlayerView = rootView.findViewById(R.id.player_view);
-        String url = "http://120.77.95.13/-intro-cheesecake.mp4";
-        initializePlayer(Uri.parse(url));
+//        String url = "http://120.77.95.13/-intro-cheesecake.mp4";
+//        initializePlayer(Uri.parse(url));
 
         mPrevious = rootView.findViewById(R.id.button_previous);
         mNext = rootView.findViewById(R.id.button_next);
@@ -108,6 +108,10 @@ public class FragmentStep extends Fragment {
                                 + ". Image is:"
                                 + recipes.get(0).getImage()
                         );
+//                        String url = "http://120.77.95.13/-intro-cheesecake.mp4";
+                        String url =recipes.get(positionRecipe).getSteps().get(positionStep).getVideoURL() ;
+                        initializePlayer(Uri.parse(url));
+                        Log.d("Video URL", "is: " + url);
                     }
                 }
         );
