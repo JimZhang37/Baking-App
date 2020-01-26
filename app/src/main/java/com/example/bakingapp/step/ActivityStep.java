@@ -1,5 +1,6 @@
 package com.example.bakingapp.step;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
@@ -17,6 +18,12 @@ public class ActivityStep extends AppCompatActivity implements FragmentStep.Butt
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step);
+
+        // Get a support ActionBar corresponding to this toolbar
+        ActionBar ab = getSupportActionBar();
+        // Enable the Up button
+        ab.setDisplayHomeAsUpEnabled(true);
+
         Intent intent = getIntent();
         positionStep = intent.getIntExtra(ActivityRecipe.EXTRA_INT_STEP, 0);
         positionRecipe = intent.getIntExtra(ActivityRecipe.EXTRA_INT_RECIPE, 0);

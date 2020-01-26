@@ -66,6 +66,7 @@ public class FragmentRecipe extends Fragment {
                     @Override
                     public void onChanged(List<Recipe> recipes) {
                         recipe = recipes.get(position);
+                        getActivity().setTitle(recipe.getName());
                         tvIngredients.setText(recipe.getName());
                         adapter.updateData(recipes.get(position).getSteps());
 

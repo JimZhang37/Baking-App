@@ -1,10 +1,12 @@
 package com.example.bakingapp.recipe;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -26,9 +28,18 @@ public class ActivityRecipe extends AppCompatActivity implements AdapterStep.Lis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe);
+
+        // Get a support ActionBar corresponding to this toolbar
+        ActionBar ab = getSupportActionBar();
+        // Enable the Up button
+        ab.setDisplayHomeAsUpEnabled(true);
+
+        getPreference();
         Intent intent = getIntent();
-        positionRecipe = intent.getIntExtra(ActivityMain.EXTRA_INT_RECIPE,0);
+        positionRecipe = intent.getIntExtra(ActivityMain.EXTRA_INT_RECIPE, positionRecipe);
         Log.d("Intent recipe", "position is:" + positionRecipe);
+
+
         if (findViewById(R.id.fragment_host) != null) {
             mTwoPane = true;
 
@@ -36,7 +47,7 @@ public class ActivityRecipe extends AppCompatActivity implements AdapterStep.Lis
             FragmentStep fragmentStep = new FragmentStep();
 
             positionStep = 0;
-            fragmentStep.setPosition(positionStep,positionRecipe,this);
+            fragmentStep.setPosition(positionStep, positionRecipe, this);
             manager.beginTransaction()
                     .add(R.id.fragment_host, fragmentStep)
                     .commit();
@@ -48,12 +59,14 @@ public class ActivityRecipe extends AppCompatActivity implements AdapterStep.Lis
 
     @Override
     public void onListItemClicked(int position, int recipePosition) {
+        savePreference(recipePosition, position);
 
         if (mTwoPane == false) {
             Log.d("onListItemClicked", "one");
             Intent intent = new Intent(this, ActivityStep.class);
             intent.putExtra(EXTRA_INT_STEP, position);
             intent.putExtra(EXTRA_INT_RECIPE, recipePosition);
+
             startActivity(intent);
         } else {
             Log.d("onListItemClicked", "two");
@@ -62,7 +75,7 @@ public class ActivityRecipe extends AppCompatActivity implements AdapterStep.Lis
             FragmentStep fragmentStep = new FragmentStep();
             positionStep = position;
 
-            fragmentStep.setPosition(positionStep,positionRecipe, this);
+            fragmentStep.setPosition(positionStep, positionRecipe, this);
             manager.beginTransaction()
                     .replace(R.id.fragment_host, fragmentStep)
                     .commit();
@@ -71,12 +84,13 @@ public class ActivityRecipe extends AppCompatActivity implements AdapterStep.Lis
 
     @Override
     public void onPreviousClick(int currentPosition) {
-        positionStep = currentPosition -1;
+        positionStep = currentPosition - 1;
 
+        savePreference(positionRecipe, positionStep);
         FragmentManager manager = getSupportFragmentManager();
         FragmentStep fragmentStep = new FragmentStep();
 
-        fragmentStep.setPosition(positionStep,positionRecipe, this);
+        fragmentStep.setPosition(positionStep, positionRecipe, this);
         manager.beginTransaction()
                 .replace(R.id.fragment_host, fragmentStep)
                 .commit();
@@ -85,14 +99,30 @@ public class ActivityRecipe extends AppCompatActivity implements AdapterStep.Lis
 
     @Override
     public void onNextClick(int currentPosition) {
-        positionStep = currentPosition +1;
+        positionStep = currentPosition + 1;
+        savePreference(positionRecipe, positionStep);
 
         FragmentManager manager = getSupportFragmentManager();
         FragmentStep fragmentStep = new FragmentStep();
-
-        fragmentStep.setPosition(positionStep,positionRecipe, this);
+        fragmentStep.setPosition(positionStep, positionRecipe, this);
         manager.beginTransaction()
                 .replace(R.id.fragment_host, fragmentStep)
                 .commit();
+    }
+
+    private void savePreference(int positionRecipe, int positionStep) {
+
+        SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt(EXTRA_INT_RECIPE, positionRecipe);
+        editor.putInt(EXTRA_INT_STEP, positionStep);
+        editor.commit();
+    }
+
+    private void getPreference() {
+        SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
+        positionRecipe = sharedPref.getInt(EXTRA_INT_RECIPE, 0);
+        positionStep = sharedPref.getInt(EXTRA_INT_STEP, 0);
+        Log.d("sharedPreference", "recipe is: "+ positionRecipe);
     }
 }

@@ -42,12 +42,13 @@ public class FragmentStep extends Fragment {
 
     private ButtonClickListener mButtonClickListener;
 
-    public interface ButtonClickListener{
+    public interface ButtonClickListener {
         void onPreviousClick(int currentPosition);
 
         void onNextClick(int currentPosition);
 
     }
+
     public FragmentStep() {
     }
 
@@ -74,7 +75,7 @@ public class FragmentStep extends Fragment {
             @Override
             public void onClick(View v) {
 
-                if(mButtonClickListener != null && positionStep > 0){
+                if (mButtonClickListener != null && positionStep > 0) {
 
                     mButtonClickListener.onPreviousClick(positionStep);
                 }
@@ -84,7 +85,7 @@ public class FragmentStep extends Fragment {
         mNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mButtonClickListener != null && positionStep < mRecipes.get(positionRecipe).getSteps().size()-1){
+                if (mButtonClickListener != null && positionStep < mRecipes.get(positionRecipe).getSteps().size() - 1) {
                     mButtonClickListener.onNextClick(positionStep);
                 }
             }
@@ -100,7 +101,7 @@ public class FragmentStep extends Fragment {
                     @Override
                     public void onChanged(List<Recipe> recipes) {
                         mRecipes = recipes;
-
+                        getActivity().setTitle(recipes.get(positionRecipe).getName());
                         tvStepDestription.setText(recipes.get(positionRecipe).getSteps().get(positionStep).getDescription());
 
                         Log.d("AAAAA", "data of recipe received. Name is:" + recipes.get(0).getName()
@@ -138,7 +139,7 @@ public class FragmentStep extends Fragment {
 
     }
 
-    public void releasePlayer(){
+    public void releasePlayer() {
         mPlayer.stop();
         mPlayer.release();
         mPlayer = null;
