@@ -8,4 +8,4 @@ The feedback from the first submission is:
 2 the video should stop when the user back to recipe activity
 3 in case video url is absent, the fragment should deal with this error case
 
-The second submmision is done in 27 January 2020
+The second submission is done in 27 January 2020
