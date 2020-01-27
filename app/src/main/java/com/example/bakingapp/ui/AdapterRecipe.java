@@ -29,24 +29,15 @@ public class AdapterRecipe extends RecyclerView.Adapter<AdapterRecipe.VHRecipe> 
         notifyDataSetChanged();
     }
 
-    interface ListItemClickeListener {
-        void onListItemClicked(int position);
-    }
-
     @Override
     public void onBindViewHolder(@NonNull VHRecipe holder, int position) {
-//        Recipe recipe = mRecipes.get(position);
-
-
-        holder.bind( position);
-
+        holder.bind(position);
     }
 
     @NonNull
     @Override
     public VHRecipe onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         CardView layout = (CardView) LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_recipe, parent, false);
-
         return new VHRecipe(layout);
     }
 
@@ -56,6 +47,10 @@ public class AdapterRecipe extends RecyclerView.Adapter<AdapterRecipe.VHRecipe> 
             return 0;
         }
         return mRecipes.size();
+    }
+
+    interface ListItemClickeListener {
+        void onListItemClicked(int position);
     }
 
     class VHRecipe extends RecyclerView.ViewHolder {
@@ -76,6 +71,7 @@ public class AdapterRecipe extends RecyclerView.Adapter<AdapterRecipe.VHRecipe> 
             String image = mRecipes.get(position).getImage();
             mName.setText(name);
             mImage.setText(image);
+
             rootView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -85,4 +81,5 @@ public class AdapterRecipe extends RecyclerView.Adapter<AdapterRecipe.VHRecipe> 
         }
 
     }
+
 }

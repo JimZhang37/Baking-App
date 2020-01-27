@@ -17,11 +17,16 @@ public class ActivityStep extends AppCompatActivity implements FragmentStep.Butt
     private int positionStep;
     private int positionRecipe;
 
+    /**
+     * Define Up button in action bar's behavior, navigating to ActivityRecipe with the same Recipe.
+     *
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
         Intent intent = new Intent(this, ActivityRecipe.class);
-        intent.putExtra(ActivityMain.EXTRA_INT_RECIPE,positionRecipe);
+        intent.putExtra(ActivityMain.EXTRA_INT_RECIPE, positionRecipe);
         startActivity(intent);
         return true;
     }
@@ -31,9 +36,7 @@ public class ActivityStep extends AppCompatActivity implements FragmentStep.Butt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step);
 
-        // Get a support ActionBar corresponding to this toolbar
         ActionBar ab = getSupportActionBar();
-        // Enable the Up button
         ab.setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
@@ -42,8 +45,7 @@ public class ActivityStep extends AppCompatActivity implements FragmentStep.Butt
 
         FragmentManager manager = getSupportFragmentManager();
         FragmentStep fragmentStep = new FragmentStep();
-        fragmentStep.setPosition(positionStep,positionRecipe, this);
-
+        fragmentStep.setPosition(positionStep, positionRecipe, this);
         manager.beginTransaction()
                 .add(R.id.fragment_host, fragmentStep)
                 .commit();
@@ -51,12 +53,10 @@ public class ActivityStep extends AppCompatActivity implements FragmentStep.Butt
 
     @Override
     public void onPreviousClick(int currentPosition) {
-
-            positionStep = currentPosition-1;
-
+        positionStep = currentPosition - 1;
         FragmentManager manager = getSupportFragmentManager();
         FragmentStep fragmentStep = new FragmentStep();
-        fragmentStep.setPosition(positionStep,positionRecipe, this);
+        fragmentStep.setPosition(positionStep, positionRecipe, this);
         manager.beginTransaction()
                 .replace(R.id.fragment_host, fragmentStep)
                 .commit();
@@ -65,13 +65,11 @@ public class ActivityStep extends AppCompatActivity implements FragmentStep.Butt
     @Override
     public void onNextClick(int currentPosition) {
         positionStep = currentPosition + 1;
-
         FragmentManager manager = getSupportFragmentManager();
         FragmentStep fragmentStep = new FragmentStep();
-        fragmentStep.setPosition(positionStep,positionRecipe, this);
+        fragmentStep.setPosition(positionStep, positionRecipe, this);
         manager.beginTransaction()
                 .replace(R.id.fragment_host, fragmentStep)
                 .commit();
-
     }
 }

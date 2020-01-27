@@ -25,27 +25,24 @@ import com.example.bakingapp.ui.ActivityMain;
 import java.util.List;
 
 public class FragmentRecipe extends Fragment {
+    public static final String FAVOURITE_INGREDIENT = "favourite_ingredient";
     private RecyclerView recyclerViewSteps;
     private TextView tvIngredients;
     private int position;
     private Recipe recipe;
     private AdapterStep adapter;
-    public static final String FAVOURITE_INGREDIENT = "favourite_ingredient";
     private String ingredientString;
+
     public FragmentRecipe() {
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
-
-
         View rootView = inflater.inflate(R.layout.fragment_recipe, container,false);
 
         Intent intent = getActivity().getIntent();
         position = intent.getIntExtra(ActivityMain.EXTRA_INT_RECIPE,0);
-        Log.d("position is", "is default value? value is: " + position);
 
         tvIngredients = rootView.findViewById(R.id.tv_ingredients);
 
@@ -55,8 +52,6 @@ public class FragmentRecipe extends Fragment {
         recyclerViewSteps.setLayoutManager(layoutManager);
         adapter = new AdapterStep((AdapterStep.ListItemClickeListener) getActivity(), position);
         recyclerViewSteps.setAdapter(adapter);
-
-
 
         observeRecipe();
 
@@ -70,7 +65,6 @@ public class FragmentRecipe extends Fragment {
                     public void onChanged(List<Recipe> recipes) {
                         recipe = recipes.get(position);
                         getActivity().setTitle(recipe.getName());
-
 
                         adapter.updateData(recipes.get(position).getSteps());
 
@@ -89,21 +83,20 @@ public class FragmentRecipe extends Fragment {
 
                         tvIngredients.setText(ingredientString);
                         savePreference(ingredientString);
-                        Log.d("AAAAA", "data of recipe received. Name is:" + recipes.get(0).getName()
-                                +". Image is:"
-                                +recipes.get(0).getImage()
-                        );
+                        Log.d("onChanged","FragmentReciipe");
                     }
                 }
         );
     }
 
+    /**
+     * save the last visited recipe's ingredients data for widget
+     * @param ingredients
+     */
     private void savePreference(String ingredients) {
-
         SharedPreferences sharedPref = getActivity().getSharedPreferences("abc",getActivity().MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(FAVOURITE_INGREDIENT, ingredients);
-
         editor.commit();
     }
 }

@@ -19,9 +19,11 @@ import com.example.bakingapp.recipe.ActivityRecipe;
 import java.util.List;
 
 public class ActivityMain extends AppCompatActivity implements AdapterRecipe.ListItemClickeListener {
+
     private RecyclerView recyclerViewRecipeList;
-    public static final String EXTRA_INT_RECIPE = "from_main_to_recipe";
     private AdapterRecipe adapter;
+    public static final String EXTRA_INT_RECIPE = "from_main_to_recipe";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +31,6 @@ public class ActivityMain extends AppCompatActivity implements AdapterRecipe.Lis
         setContentView(R.layout.activity_main);
 
         recyclerViewRecipeList = findViewById(R.id.recycler_recipe_list);
-
-
         adapter = new AdapterRecipe(this);
         recyclerViewRecipeList.setAdapter(adapter);
         recyclerViewRecipeList.setHasFixedSize(true);
@@ -47,11 +47,7 @@ public class ActivityMain extends AppCompatActivity implements AdapterRecipe.Lis
                     @Override
                     public void onChanged(List<Recipe> recipes) {
                         adapter.updateData(recipes);
-
-                        Log.d("AAAAA", "data of recipe received. Name is:" + recipes.get(0).getName()
-                        +". Image is:"
-                                +recipes.get(0).getImage()
-                        );
+                        Log.d("onChanged", "ActivityMain");
                     }
                 }
         );
@@ -75,6 +71,5 @@ public class ActivityMain extends AppCompatActivity implements AdapterRecipe.Lis
         Intent intent = new Intent(this, ActivityRecipe.class);
         intent.putExtra(EXTRA_INT_RECIPE, position);
         startActivity(intent);
-
     }
 }

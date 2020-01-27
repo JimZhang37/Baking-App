@@ -28,25 +28,23 @@ import com.google.android.exoplayer2.util.Util;
 import java.util.List;
 
 public class FragmentStep extends Fragment {
+
+    private String PLAYER_CURRENT_POS_KEY = "PLAYER_CURRENT_POS_KEY";
+    private String PLAYER_IS_READY_KEY = "PLAYER_IS_READY_KEY";
     private int positionStep;
     private int positionRecipe;
-
     private PlayerView mPlayerView;
     private SimpleExoPlayer mPlayer;
-
-    //    private Step step;
     private List<Recipe> mRecipes;
     private TextView tvStepDestription;
     private Button mPrevious;
     private Button mNext;
-
     private ButtonClickListener mButtonClickListener;
+    private Bundle savedInstanceState;
 
     public interface ButtonClickListener {
         void onPreviousClick(int currentPosition);
-
         void onNextClick(int currentPosition);
-
     }
 
     public FragmentStep() {
@@ -55,33 +53,22 @@ public class FragmentStep extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
+
         View rootView = inflater.inflate(R.layout.fragment_step, container, false);
 
-//        Intent intent = getActivity().getIntent();
-//        positionStep = intent.getIntExtra(ActivityRecipe.EXTRA_INT_STEP, positionStep);
-//            positionRecipe = intent.getIntExtra(ActivityRecipe.EXTRA_INT_RECIPE, 0);
-
         tvStepDestription = rootView.findViewById(R.id.tv_step_description);
-        observeStep();
-
         mPlayerView = rootView.findViewById(R.id.player_view);
-//        String url = "http://120.77.95.13/-intro-cheesecake.mp4";
-//        initializePlayer(Uri.parse(url));
-
         mPrevious = rootView.findViewById(R.id.button_previous);
         mNext = rootView.findViewById(R.id.button_next);
 
         mPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 if (mButtonClickListener != null && positionStep > 0) {
-
                     mButtonClickListener.onPreviousClick(positionStep);
                 }
             }
         });
-
         mNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,6 +78,10 @@ public class FragmentStep extends Fragment {
             }
         });
 
+        if(savedInstanceState != null){
+            this.savedInstanceState = savedInstanceState;
+        }
+        observeStep();
         return rootView;
 
     }
@@ -104,14 +95,11 @@ public class FragmentStep extends Fragment {
                         getActivity().setTitle(recipes.get(positionRecipe).getName());
                         tvStepDestription.setText(recipes.get(positionRecipe).getSteps().get(positionStep).getDescription());
 
-                        Log.d("AAAAA", "data of recipe received. Name is:" + recipes.get(0).getName()
-                                + ". Image is:"
-                                + recipes.get(0).getImage()
-                        );
 //                        String url = "http://120.77.95.13/-intro-cheesecake.mp4";
                         String url =recipes.get(positionRecipe).getSteps().get(positionStep).getVideoURL() ;
+                        //TODO Check if there is a video url or not unless you should display thumbnail instead
                         initializePlayer(Uri.parse(url));
-                        Log.d("Video URL", "is: " + url);
+                        Log.d("onChanged", "FragmentStep");
                     }
                 }
         );
@@ -125,22 +113,25 @@ public class FragmentStep extends Fragment {
     }
 
     public void initializePlayer(Uri mp4VideoUri) {
-        mPlayer = new SimpleExoPlayer.Builder(getContext()).build();
-        mPlayerView.setPlayer(mPlayer);
+        if (mPlayer != null) {
+            DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(),
+                    Util.getUserAgent(getContext(), "yourApplicationName"));
+            MediaSource videoSource =
+                    new ProgressiveMediaSource.Factory(dataSourceFactory)
+                            .createMediaSource(mp4VideoUri);
+            //TODO You should save state and position of exoplayer before rotation.
+            // Prepare the mPlayer with the source.
 
-        // Produces DataSource instances through which media data is loaded.
-        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(),
-                Util.getUserAgent(getContext(), "yourApplicationName"));
+            mPlayer.prepare(videoSource);
+            if(savedInstanceState != null){
+                mPlayer.setPlayWhenReady(savedInstanceState.getBoolean(PLAYER_IS_READY_KEY));
+                mPlayer.seekTo(savedInstanceState.getLong(PLAYER_CURRENT_POS_KEY));
 
-        // This is the MediaSource representing the media to be played.
-        MediaSource videoSource =
-                new ProgressiveMediaSource.Factory(dataSourceFactory)
-                        .createMediaSource(mp4VideoUri);
-
-        // Prepare the mPlayer with the source.
-        mPlayer.prepare(videoSource);
-        mPlayer.setPlayWhenReady(true);
-
+            }else {
+                mPlayer.setPlayWhenReady(true);
+            }
+            //TODO make mPlayer full screen in phone's landscape mode.
+        }
     }
 
     public void releasePlayer() {
@@ -150,8 +141,28 @@ public class FragmentStep extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        mPlayer = new SimpleExoPlayer.Builder(getContext()).build();
+        mPlayerView.setPlayer(mPlayer);
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         releasePlayer();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mPlayer.stop();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong(PLAYER_CURRENT_POS_KEY, Math.max(0, mPlayer.getCurrentPosition()));
+        outState.putBoolean(PLAYER_IS_READY_KEY, mPlayer.getPlayWhenReady());
     }
 }
