@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentManager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.example.bakingapp.R;
@@ -16,7 +17,8 @@ import com.example.bakingapp.ui.ActivityMain;
 public class ActivityStep extends AppCompatActivity implements FragmentStep.ButtonClickListener {
     private int positionStep;
     private int positionRecipe;
-
+    FragmentManager manager;
+    FragmentStep fragmentStep;
     /**
      * Define Up button in action bar's behavior, navigating to ActivityRecipe with the same Recipe.
      *
@@ -43,19 +45,20 @@ public class ActivityStep extends AppCompatActivity implements FragmentStep.Butt
         positionStep = intent.getIntExtra(ActivityRecipe.EXTRA_INT_STEP, 0);
         positionRecipe = intent.getIntExtra(ActivityRecipe.EXTRA_INT_RECIPE, 0);
 
-        FragmentManager manager = getSupportFragmentManager();
-        FragmentStep fragmentStep = new FragmentStep();
+        manager = getSupportFragmentManager();
+        fragmentStep = new FragmentStep();
         fragmentStep.setPosition(positionStep, positionRecipe, this);
         manager.beginTransaction()
-                .add(R.id.fragment_host, fragmentStep)
+                .replace(R.id.fragment_host, fragmentStep)
                 .commit();
+//        Log.d("ActivityStep","onCreate, onChanged");
     }
 
     @Override
     public void onPreviousClick(int currentPosition) {
         positionStep = currentPosition - 1;
-        FragmentManager manager = getSupportFragmentManager();
-        FragmentStep fragmentStep = new FragmentStep();
+        manager = getSupportFragmentManager();
+        fragmentStep = new FragmentStep();
         fragmentStep.setPosition(positionStep, positionRecipe, this);
         manager.beginTransaction()
                 .replace(R.id.fragment_host, fragmentStep)
@@ -65,11 +68,19 @@ public class ActivityStep extends AppCompatActivity implements FragmentStep.Butt
     @Override
     public void onNextClick(int currentPosition) {
         positionStep = currentPosition + 1;
-        FragmentManager manager = getSupportFragmentManager();
-        FragmentStep fragmentStep = new FragmentStep();
+        manager = getSupportFragmentManager();
+        fragmentStep = new FragmentStep();
         fragmentStep.setPosition(positionStep, positionRecipe, this);
         manager.beginTransaction()
                 .replace(R.id.fragment_host, fragmentStep)
                 .commit();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        manager.beginTransaction()
+                .remove(fragmentStep);
+//        Log.d("onDestroy@ActivityStep", "onChanged fragmentstep removed");
     }
 }

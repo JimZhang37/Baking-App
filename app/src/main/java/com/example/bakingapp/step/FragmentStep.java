@@ -40,10 +40,12 @@ public class FragmentStep extends Fragment {
     private Button mPrevious;
     private Button mNext;
     private ButtonClickListener mButtonClickListener;
-    private Bundle savedInstanceState;
+    private boolean mReadyToPlay;
+    private long mCurrentPosition;
 
     public interface ButtonClickListener {
         void onPreviousClick(int currentPosition);
+
         void onNextClick(int currentPosition);
     }
 
@@ -60,6 +62,9 @@ public class FragmentStep extends Fragment {
         mPlayerView = rootView.findViewById(R.id.player_view);
         mPrevious = rootView.findViewById(R.id.button_previous);
         mNext = rootView.findViewById(R.id.button_next);
+
+        mPlayer = new SimpleExoPlayer.Builder(getContext()).build();
+        mPlayerView.setPlayer(mPlayer);
 
         mPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,15 +83,20 @@ public class FragmentStep extends Fragment {
             }
         });
 
-        if(savedInstanceState != null){
-            this.savedInstanceState = savedInstanceState;
+        if (savedInstanceState != null) {
+            mReadyToPlay = savedInstanceState.getBoolean(PLAYER_IS_READY_KEY);
+            mCurrentPosition = savedInstanceState.getLong(PLAYER_CURRENT_POS_KEY);
+            Log.d("savedInstanceState", savedInstanceState.toString());
         }
         observeStep();
+//        Log.d("FragmentStep", "onCreateView onChanged");
         return rootView;
 
     }
 
     private void observeStep() {
+//        Log.d("onChanged", "observeStep()");
+        ((RecipeApplication) requireContext().getApplicationContext()).getRepository().getRecipes().removeObservers(this);
         ((RecipeApplication) requireContext().getApplicationContext()).getRepository().getRecipes().observe(
                 this, new Observer<List<Recipe>>() {
                     @Override
@@ -113,25 +123,24 @@ public class FragmentStep extends Fragment {
     }
 
     public void initializePlayer(Uri mp4VideoUri) {
-        if (mPlayer != null) {
-            DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(),
-                    Util.getUserAgent(getContext(), "yourApplicationName"));
-            MediaSource videoSource =
-                    new ProgressiveMediaSource.Factory(dataSourceFactory)
-                            .createMediaSource(mp4VideoUri);
-            //TODO You should save state and position of exoplayer before rotation.
-            // Prepare the mPlayer with the source.
 
-            mPlayer.prepare(videoSource);
-            if(savedInstanceState != null){
-                mPlayer.setPlayWhenReady(savedInstanceState.getBoolean(PLAYER_IS_READY_KEY));
-                mPlayer.seekTo(savedInstanceState.getLong(PLAYER_CURRENT_POS_KEY));
+        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(),
+                Util.getUserAgent(getContext(), "yourApplicationName"));
+        MediaSource videoSource =
+                new ProgressiveMediaSource.Factory(dataSourceFactory)
+                        .createMediaSource(mp4VideoUri);
+        //TODO You should save state and position of exoplayer before rotation.
+        // Prepare the mPlayer with the source.
 
-            }else {
-                mPlayer.setPlayWhenReady(true);
-            }
-            //TODO make mPlayer full screen in phone's landscape mode.
-        }
+        mPlayer.prepare(videoSource);
+//        if(mCurrentPosition == null) mCurrentPosition = 0;
+//        if(mReadyToPlay == null) mReadyToPlay = true;
+
+        mPlayer.setPlayWhenReady(mReadyToPlay);
+        mPlayer.seekTo(mCurrentPosition);
+
+        //TODO make mPlayer full screen in phone's landscape mode.
+
     }
 
     public void releasePlayer() {
@@ -140,12 +149,6 @@ public class FragmentStep extends Fragment {
         mPlayer = null;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        mPlayer = new SimpleExoPlayer.Builder(getContext()).build();
-        mPlayerView.setPlayer(mPlayer);
-    }
 
     @Override
     public void onDestroy() {
@@ -162,7 +165,15 @@ public class FragmentStep extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+        log(mPlayer.getCurrentPosition(), mPlayer.getPlayWhenReady(), true);
         outState.putLong(PLAYER_CURRENT_POS_KEY, Math.max(0, mPlayer.getCurrentPosition()));
         outState.putBoolean(PLAYER_IS_READY_KEY, mPlayer.getPlayWhenReady());
+    }
+
+    private void log(long v1, boolean v2, boolean v3) {
+        Log.d("savedata", "position: " + v1
+                + "\n" + "play: " + v2
+                + "\n" + "save: " + v3);
+
     }
 }
