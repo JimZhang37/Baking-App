@@ -88,6 +88,9 @@ public class FragmentStep extends Fragment {
             mCurrentPosition = savedInstanceState.getLong(PLAYER_CURRENT_POS_KEY);
             Log.d("savedInstanceState", savedInstanceState.toString());
         }
+        else {
+            mReadyToPlay = true;
+        }
         observeStep();
 //        Log.d("FragmentStep", "onCreateView onChanged");
         return rootView;
@@ -105,8 +108,8 @@ public class FragmentStep extends Fragment {
                         getActivity().setTitle(recipes.get(positionRecipe).getName());
                         tvStepDestription.setText(recipes.get(positionRecipe).getSteps().get(positionStep).getDescription());
 
-//                        String url = "http://120.77.95.13/-intro-cheesecake.mp4";
-                        String url =recipes.get(positionRecipe).getSteps().get(positionStep).getVideoURL() ;
+                        String url = "http://120.77.95.13/-intro-cheesecake.mp4";
+//                        String url =recipes.get(positionRecipe).getSteps().get(positionStep).getVideoURL() ;
                         //TODO Check if there is a video url or not unless you should display thumbnail instead
                         initializePlayer(Uri.parse(url));
                         Log.d("onChanged", "FragmentStep");

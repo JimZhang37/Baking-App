@@ -3,6 +3,7 @@ package com.example.bakingapp.step;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.content.Intent;
@@ -19,6 +20,7 @@ public class ActivityStep extends AppCompatActivity implements FragmentStep.Butt
     private int positionRecipe;
     FragmentManager manager;
     FragmentStep fragmentStep;
+
     /**
      * Define Up button in action bar's behavior, navigating to ActivityRecipe with the same Recipe.
      *
@@ -46,11 +48,15 @@ public class ActivityStep extends AppCompatActivity implements FragmentStep.Butt
         positionRecipe = intent.getIntExtra(ActivityRecipe.EXTRA_INT_RECIPE, 0);
 
         manager = getSupportFragmentManager();
-        fragmentStep = new FragmentStep();
-        fragmentStep.setPosition(positionStep, positionRecipe, this);
-        manager.beginTransaction()
-                .replace(R.id.fragment_host, fragmentStep)
-                .commit();
+        Fragment a =  manager.findFragmentByTag("FRAGMENT");
+        if(a == null) {
+            fragmentStep = new FragmentStep();
+            fragmentStep.setPosition(positionStep, positionRecipe, this);
+            manager.beginTransaction()
+                    .add(R.id.fragment_host, fragmentStep, "FRAGMENT")
+                    .commit();
+        }
+
 //        Log.d("ActivityStep","onCreate, onChanged");
     }
 
@@ -79,8 +85,9 @@ public class ActivityStep extends AppCompatActivity implements FragmentStep.Butt
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        manager.beginTransaction()
-                .remove(fragmentStep);
-//        Log.d("onDestroy@ActivityStep", "onChanged fragmentstep removed");
+//        manager.beginTransaction()
+//                .remove(fragmentStep)
+//                .commit();
+        Log.d("onDestroy@ActivityStep", "onChanged fragmentstep removed");
     }
 }

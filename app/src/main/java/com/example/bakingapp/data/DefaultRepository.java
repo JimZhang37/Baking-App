@@ -27,8 +27,8 @@ public class DefaultRepository {
         Log.d("DefaultRepository", "created");
         recipes = new MutableLiveData<List<Recipe>>();
 
-//        String RECIPE_BASE_URL = "http://120.77.95.13";
-        String RECIPE_BASE_URL = "http://go.udacity.com/android-baking-app-json";
+        String RECIPE_BASE_URL = "http://120.77.95.13";
+//        String RECIPE_BASE_URL = "http://go.udacity.com/android-baking-app-json";
 
         Moshi moshi = new Moshi.Builder()
                 .build();
