@@ -1,5 +1,6 @@
 package com.example.bakingapp.step;
 
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,10 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 
@@ -24,6 +27,7 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -37,6 +41,7 @@ public class FragmentStep extends Fragment {
     private SimpleExoPlayer mPlayer;
     private List<Recipe> mRecipes;
     private TextView tvStepDestription;
+    private ImageView imageStep;
     private Button mPrevious;
     private Button mNext;
     private ButtonClickListener mButtonClickListener;
@@ -59,6 +64,7 @@ public class FragmentStep extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_step, container, false);
 
         tvStepDestription = rootView.findViewById(R.id.tv_step_description);
+        imageStep = rootView.findViewById(R.id.image_step);
         mPlayerView = rootView.findViewById(R.id.player_view);
         mPrevious = rootView.findViewById(R.id.button_previous);
         mNext = rootView.findViewById(R.id.button_next);
@@ -87,8 +93,7 @@ public class FragmentStep extends Fragment {
             mReadyToPlay = savedInstanceState.getBoolean(PLAYER_IS_READY_KEY);
             mCurrentPosition = savedInstanceState.getLong(PLAYER_CURRENT_POS_KEY);
             Log.d("savedInstanceState", savedInstanceState.toString());
-        }
-        else {
+        } else {
             mReadyToPlay = true;
         }
         observeStep();
@@ -98,7 +103,6 @@ public class FragmentStep extends Fragment {
     }
 
     private void observeStep() {
-//        Log.d("onChanged", "observeStep()");
         ((RecipeApplication) requireContext().getApplicationContext()).getRepository().getRecipes().removeObservers(this);
         ((RecipeApplication) requireContext().getApplicationContext()).getRepository().getRecipes().observe(
                 this, new Observer<List<Recipe>>() {
@@ -108,11 +112,22 @@ public class FragmentStep extends Fragment {
                         getActivity().setTitle(recipes.get(positionRecipe).getName());
                         tvStepDestription.setText(recipes.get(positionRecipe).getSteps().get(positionStep).getDescription());
 
-                        String url = "http://120.77.95.13/-intro-cheesecake.mp4";
-//                        String url =recipes.get(positionRecipe).getSteps().get(positionStep).getVideoURL() ;
+//                        String url = "http://120.77.95.13/-intro-cheesecake.mp4";
+                        String url =recipes.get(positionRecipe).getSteps().get(positionStep).getVideoURL() ;
                         //TODO Check if there is a video url or not unless you should display thumbnail instead
-                        initializePlayer(Uri.parse(url));
-                        Log.d("onChanged", "FragmentStep");
+                        if (url != null && url != "") {
+                            imageStep.setVisibility(View.GONE);
+                            mPlayerView.setVisibility(View.VISIBLE);
+                            initializePlayer(Uri.parse(url));
+                        } else {
+                            imageStep.setVisibility(View.VISIBLE);
+                            mPlayerView.setVisibility(View.GONE);
+                            String imageURL = recipes.get(positionRecipe).getSteps().get(positionStep).getThumbnailURL();
+                            Picasso.get()
+                                    .load(imageURL)
+                                    .error(R.drawable.error_logs)
+                                    .into(imageStep);
+                        }
                     }
                 }
         );
@@ -136,9 +151,6 @@ public class FragmentStep extends Fragment {
         // Prepare the mPlayer with the source.
 
         mPlayer.prepare(videoSource);
-//        if(mCurrentPosition == null) mCurrentPosition = 0;
-//        if(mReadyToPlay == null) mReadyToPlay = true;
-
         mPlayer.setPlayWhenReady(mReadyToPlay);
         mPlayer.seekTo(mCurrentPosition);
 
@@ -178,5 +190,35 @@ public class FragmentStep extends Fragment {
                 + "\n" + "play: " + v2
                 + "\n" + "save: " + v3);
 
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            //First Hide other objects (listview or recyclerview), better hide them using Gone.
+            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) mPlayerView.getLayoutParams();
+            params.width = params.MATCH_PARENT;
+            params.height = params.MATCH_PARENT;
+            mPlayerView.setLayoutParams(params);
+            if (getActivity().getActionBar() != null) {
+                getActivity().getActionBar().hide();
+
+            }
+            getActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE);
+            mNext.setVisibility(View.GONE);
+            mPrevious.setVisibility(View.GONE);
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) mPlayerView.getLayoutParams();
+            params.width = params.MATCH_PARENT;
+            params.height = 600;
+            mPlayerView.setLayoutParams(params);
+            if (getActivity().getActionBar() != null) {
+                getActivity().getActionBar().show();
+            }
+            getActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+            mNext.setVisibility(View.VISIBLE);
+            mPrevious.setVisibility(View.VISIBLE);
+        }
     }
 }
